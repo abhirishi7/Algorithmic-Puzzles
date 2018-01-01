@@ -1,0 +1,65 @@
+/*
+ * Hello.cpp
+ *
+ *  Created on: 20-Aug-2017
+ *      Author: Abhishek Tripathi
+ */
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+vector<int> rotateByK( int** input, int rowSize, int colSize, int k) {
+	int result[rowSize][colSize];
+	int newPos = 0;
+	int toMove = k % colSize;
+	int index;
+	vector<int> resultVector;
+	resultVector.reserve(rowSize*colSize);
+	for (auto i = 0; i < rowSize; i++) {
+		index = 0;
+		for (auto j = 0; j < colSize; j++) {
+			newPos = (index - toMove);
+			if (newPos < 0)
+				newPos = colSize - abs(newPos);
+			result[i][newPos] = input[i][j];
+			index++;
+		}
+	}
+	for(auto i=0;i<rowSize;i++){
+		for(auto j=0;j<colSize;j++){
+			resultVector.push_back(result[i][j]);
+		}
+	}
+	return resultVector;
+}
+
+int main() {
+	int testCases = 0;
+	cin >> testCases;
+	vector<vector<int>> results;
+	results.reserve(testCases);
+	int m, n, k = 0;
+	int** input;
+	for (auto i = 0; i < testCases; i++) {
+		cin >> m >> n >> k;
+		input = new int*[m];
+		for (auto j = 0; j < m; j++) {
+			int* col = new int[n];
+			for (auto k = 0; k < n; k++) {
+				cin >> col[k];
+			}
+			input[j] = &col[0];
+		}
+		results.push_back(rotateByK((input),m, n, k));
+	}
+	for (auto result : results) {
+		for (auto val : result) {
+			cout << val << " ";
+		}
+		cout << endl;
+	}
+
+	return 0;
+}
