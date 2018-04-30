@@ -1,0 +1,61 @@
+#include <iostream>
+#include <vector>
+#include<string>
+
+using namespace std;
+
+const int INF = 1000 * 1000 * 1000 + 7;
+const int MX = 100 ;
+int* sd;
+vector<string> sdPath;
+
+int sortedNumberBasedOnDigits(int num) {
+	int cnt[10];
+	memset(cnt, 0, sizeof(cnt));
+	while (num) {
+		cnt[num % 10]++;
+		num /= 10;
+	}
+	int ans = 0;
+	for (int i = 9; i >= 0; i--) {
+		for (int j = 0; j < cnt[i]; j++) {
+			ans = 10 * ans + i;
+		}
+	}
+	return ans;
+}
+
+void update(int num, int sdValue, int index , string _sdPath) {
+	if (num < 0 || num > MX)
+		return;
+	if(sd[num] > sdValue) {
+		sd[num] = sdValue;
+		sdPath[num] = sdPath[index] + (_sdPath);
+	}
+}
+
+int shortestCode(int num) {
+
+	sd = new int[MX];
+	for(int i=0;i<MX;i++) {
+		sd[i] = INF;
+		sdPath.push_back("");
+	}
+	sd[0] = 0;
+	for(int i=0;i<MX;i++) {
+		update(i - 1, sd[i] + 1,i ,("d"));
+		update(i + 1, sd[i] + 1, i, ("i"));
+		update(i * i, sd[i] + 1, i, ("s"));
+		update(sortedNumberBasedOnDigits(i), sd[i] + 1 , i, ("p"));
+	}
+	return sd[num];
+}
+
+int main() {
+	int num;
+	cin >> num;
+	cout << shortestCode(num) << endl;
+	cout << sdPath[num] << endl;
+	return 0;
+}
+
