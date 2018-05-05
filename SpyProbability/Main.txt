@@ -1,0 +1,71 @@
+#include <iostream>
+#include <vector>
+#include <cctype>
+
+using namespace std;
+
+vector<double> spyProbability(int P, int S, const vector<string>& missions) {
+	vector<double> result;
+	result.reserve(P);
+	for (auto i = 0; i < P; i++)
+		result.push_back(0);
+	int totalConsistentCases = 0;
+	bool isValidHistory = true;
+	for (auto i = 0; i < (1 << P); i++) {
+		// check if valid combination, equate current combintion with total number of spies.
+		int oneCounts = 0;
+		for (auto j = 0; j < P; j++) {
+			if (((i >> j) & 1) == 1)
+				oneCounts++;
+		}
+		if (oneCounts != S) // if not valid, move to next combination
+			continue;
+
+		isValidHistory = true;
+		// for each valid combination, test the possibility of being consistent.
+		// eg. case - "F0100",
+		int spyCount = 0;
+		bool suc = false;
+		for (const auto& mission : missions) {
+			suc = std::tolower(mission[0]) == 's';
+			spyCount = 0;
+			for (auto j = 0; j < P; j++) {
+				if ((mission[j + 1] == '1') && (((i >> j) & 1) == 1))
+					spyCount++;
+			}
+			if (spyCount == 0 && !suc)
+				isValidHistory = false;
+		}
+		if (isValidHistory) {
+			totalConsistentCases++;
+			for (auto j = 0; j < P; j++) {
+				if (((i >> j) & 1) == 1)
+					result[j]++;
+			}
+		}
+	}
+	if (totalConsistentCases == 0)
+		return vector<double>();
+
+	for (auto i = 0; i < P; i++) {
+		result[i] = result[i] / static_cast<double>(totalConsistentCases);
+	}
+	return result;
+}
+
+int main() {
+	vector<string> missions = {
+		"F0100",
+		"S0101",
+		"F1010",
+		"S1011"
+	};
+
+	int P = 4;
+	int S = 2;
+	vector<double> result = spyProbability(P, S, missions);
+	for (auto ans : result)
+		cout << ans << " ";
+	return 0;
+}
+
